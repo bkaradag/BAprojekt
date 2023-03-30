@@ -1,27 +1,23 @@
 import json
-
-import numpy as np
-import pandas as pd
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import plotly.graph_objs as go
 import plotly
 from datetime import datetime
-from database import get_stationen_bodenfeuchte, get_bodenfeuchte_data, get_campus_wetter_data, get_map_daten, conn
+from database import get_stationen_bodenfeuchte, get_bodenfeuchte_data, get_map_daten
 from berechnen import berechnen_campus_wetter_daten
 import folium
 
 app = Flask(__name__)
 app.config.suppress_callback_exceptions = True
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-
 @app.route('/stations')
 def get_map():
-
     # baslangic yeri
     map = folium.Map(location=[51.7845, 9.3976], zoom_start=12)
 
@@ -39,48 +35,46 @@ def get_map():
     return render_template('stations.html', stations=map_daten)
 
 
+@app.route('/bodenfeuchte', methods=['GET', 'POST'])
+def get_bodenfeuchte():
+    if request.method == 'POST':
+        # HTML formundan seçilen istasyon ID'si alınır
+        selected_id = request.form.get('station')
+        if not selected_id:
+            return "Ein Station auswaehlen."
 
-@app.route('/dashboard',methods=['GET', 'POST'])
-def get_dashboard():
- if request.method == 'POST':
-     # HTML formundan seçilen istasyon ID'si alınır
-    selected_id = request.form.get('station')
-    if not selected_id:
-        return "Lütfen bir istasyon seçin."
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        if not (start_date_str and end_date_str):
+            return "Zeitraum auswaehlen."
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
-    start_date_str = request.form.get('start_date')
-    end_date_str = request.form.get('end_date')
-    if not (start_date_str and end_date_str):
-        return "Lütfen bir tarih aralığı seçin."
-    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+        datum, vgsl = get_bodenfeuchte_data(selected_id, start_date, end_date)
 
-    datum, vgsl = get_bodenfeuchte_data(selected_id, start_date, end_date)
+        # Plotly grafiklerini oluştur
+        fig1 = go.Figure()
+        fig1.add_trace(go.Line(x=datum, y=vgsl, name='vgsl'))
 
- # Plotly grafiklerini oluştur
-    fig1 = go.Figure()
-    fig1.add_trace(go.Line(x=datum, y=vgsl, name='vgsl'))
+        # Grafik ayarlarını yap
+        fig1.update_layout(title='Hava Durumu', xaxis_title='Datum', yaxis_title='VGSL')
 
-    # Grafik ayarlarını yap
-    fig1.update_layout(title='Hava Durumu', xaxis_title='Datum', yaxis_title='VGSL')
+        # Grafikleri HTML olarak döndür
+        grafik1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
 
-    # Grafikleri HTML olarak döndür
-    grafik1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
-
-    # Şablonu render et   grafik1JSON=grafik1JSON
-    return render_template('dashboard.html', grafik1JSON=grafik1JSON)
- else:
-     # istek methodu GET ise, sayfayı görüntüle
+        # Şablonu render et   grafik1JSON=grafik1JSON
+        return render_template('bodenfeuchte.html', grafik1JSON=grafik1JSON)
+    else:
+        # istek methodu GET ise, sayfayı görüntüle
         stations = get_stationen_bodenfeuchte()
-        return render_template('dashboard.html', stations=stations)
+        return render_template('bodenfeuchte.html', stations=stations)
 
 
-
-@app.route('/campuswetterhoexter',methods=['GET', 'POST'])
+@app.route('/campuswetterhoexter', methods=['GET', 'POST'])
 def get_campuswetter():
     if request.method == 'POST':
 
-        datum_ser, temp_ser, rel_feuchte_ser,wind_gesch_ser, luft_druck_ser, luft_druck_ser, global_st_ser, strahlug_bilanz_ser, niederschlag_10m_ser, niederschlag_tag_ser, uv_index_ser, m_mw_list, j_mw_list, zj_mw_list = berechnen_campus_wetter_daten()
+        datum_ser, temp_ser, rel_feuchte_ser, wind_gesch_ser, luft_druck_ser, luft_druck_ser, global_st_ser, strahlug_bilanz_ser, niederschlag_10m_ser, niederschlag_tag_ser, uv_index_ser, m_mw_list, j_mw_list, zj_mw_list = berechnen_campus_wetter_daten()
 
         # Plotly grafiklerini oluştur
         fig1 = go.Figure()
@@ -152,18 +146,22 @@ def get_campuswetter():
 
         fig9 = go.Figure()
         fig9.add_trace(go.Line(x=datum_ser, y=uv_index_ser, name='uv_index'))
-        fig9.add_trace(go.Line(x=m_mw_list[8].index, y=m_mw_list[8].values, name='Mittelwert Monat')) # date cikti diye tüm degerler -1 kayiyor (berechnen.py)
+        fig9.add_trace(go.Line(x=m_mw_list[8].index, y=m_mw_list[8].values,
+                               name='Mittelwert Monat'))  # date cikti diye tüm degerler -1 kayiyor (berechnen.py)
         fig9.add_trace(go.Line(x=j_mw_list[8].index, y=j_mw_list[8].values, name='Mittelwert Jahr'))
         fig9.add_trace(go.Line(x=j_mw_list[8].index, y=j_mw_list[8].values, name='Mittelwert 10 Jahre'))
         fig9.update_layout(title='UV-Index', xaxis_title='Datum', yaxis_title='UV-Index')
         graf9JSON = json.dumps(fig9, cls=plotly.utils.PlotlyJSONEncoder)
 
-    # Şablonu render et
-        return render_template('campuswetterhoexter.html', graf1JSON=graf1JSON, graf2JSON=graf2JSON, graf3JSON=graf3JSON, graf4JSON=graf4JSON, graf5JSON=graf5JSON, graf6JSON=graf6JSON, graf7JSON=graf7JSON, graf8JSON=graf8JSON, graf9JSON=graf9JSON)
+        # Şablonu render et
+        return render_template('campuswetterhoexter.html', graf1JSON=graf1JSON, graf2JSON=graf2JSON,
+                               graf3JSON=graf3JSON, graf4JSON=graf4JSON, graf5JSON=graf5JSON, graf6JSON=graf6JSON,
+                               graf7JSON=graf7JSON, graf8JSON=graf8JSON, graf9JSON=graf9JSON)
     else:
         # istek methodu GET ise, sayfayı görüntüle
         stations = get_stationen_bodenfeuchte()
         return render_template('campuswetterhoexter.html', stations=stations)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
