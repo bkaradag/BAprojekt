@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>OpenStreetMap with Python and Flask</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+  </head>
+  <body>
+    <div id="map" style="width: 100%; height: 800px;"></div>
+    <script>
+      var map = L.map('map').setView([48.78, 9.18], 10);
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18
+      }).addTo(map);
+      var stationIcon = L.icon({
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon-2x.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [0, -30]
+      });
+      {% for station in stations %}
+      var marker = L.marker([{{ station.Breite }}, {{ station.Länge }}], {icon: stationIcon}).addTo(map);
+      marker.bindPopup("Station {{ station.Stationsindex }}");
+      {% endfor %}
+    </script>
+  </body>
+</html>

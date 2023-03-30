@@ -23,9 +23,8 @@ def index():
 def get_map():
 
     # baslangic yeri
-    map = folium.Map(location=[48.78, 9.18], zoom_start=10)
+    map = folium.Map(location=[51.7845, 9.3976], zoom_start=12)
 
-    #istasyonlari bir gruba ceviriyor
     fg = folium.FeatureGroup(name="Stations")
 
     map_daten = get_map_daten()
@@ -36,7 +35,7 @@ def get_map():
         marker.add_to(fg)
     fg.add_to(map)
 
-    map.save('stations.html')
+    map.save('templates/stations.html')
     return render_template('stations.html', stations=map_daten)
 
 
