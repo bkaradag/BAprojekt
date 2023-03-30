@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bodenfeuchte</title>
+    <!-- Plotly library and dependencies -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-locale-tr-latest.min.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <ul>
+        {% for item in sidebar_items %}
+            <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Main content -->
+<div class="content">
+    <h1>Bodenfeuchte</h1>
+
+    <form method="POST">
+        <select name="station">
+            {% for station in stations %}
+                <option value="{{ station.Stationsindex }}">{{ station.Name }}</option>
+            {% endfor %}
+        </select>
+        <div>
+        <label for="start_date">Başlangıç Tarihi</label>
+        <input type="date" id="start_date" name="start_date">
+    </div>
+    <div>
+        <label for="end_date">Bitiş Tarihi</label>
+        <input type="date" id="end_date" name="end_date">
+    </div>
+        <input type="submit" value="Get Data">
+    </form>
+
+
+    <body>
+                 <div id="grafik1"></div>
+
+                 <div id="grafik2"></div>
+                 <script>
+                        var grafik1 = {{ grafik1JSON|safe }};
+                        Plotly.newPlot('grafik1', grafik1.data, grafik1.layout);
+                 </script>
+            </body>
+</div>
+
+</body>
+</html>

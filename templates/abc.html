@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Plotly Example</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+<div id="plot"></div>
+<button id="show">Göster</button>
+
+<script>
+$(document).ready(function() {
+    // Önceden tanımlanmış boş bir grafiği oluştur
+    var plot = Plotly.newPlot('plot', []);
+
+    // Verileri yükleme işlevi
+    function loadData() {
+        $.ajax({
+            url: '/data',
+            success: function(data) {
+                // Yalnızca y2 verilerini göster
+                var traces = [{
+                    x: data.x,
+                    y: data.y2,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {color: 'red'}
+                }];
+
+                // Grafiği güncelle
+                Plotly.newPlot('plot', traces);
+            }
+        });
+    }
+
+    // "Göster" düğmesine tıklandığında verileri yükle
+    $('#show').click(function() {
+        loadData();
+    });
+});
+</script>
+
+</body>
+</html
