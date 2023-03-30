@@ -27,42 +27,14 @@
 
 
     <body>
-                 <div id="graf1"></div>
-                 <div id="graf2"></div>
-                 <div id="graf3"></div>
-                 <div id="graf4"></div>
-                 <div id="graf5"></div>
-                 <div id="graf6"></div>
-                 <div id="graf7"></div>
-                 <div id="graf8"></div>
-                 <div id="graf9"></div>
-                 <script>
-                        var graf1 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf1', graf1.data, graf1.layout);
 
-                        var graf2 = {{ graf2JSON|safe }};
-                        Plotly.newPlot('graf2', graf2.data, graf2.layout);
+                 <div id="graf3"></div>
+
+                 <script>
 
                         var graf3 = {{ graf3JSON|safe }};
                         Plotly.newPlot('graf3', graf3.data, graf3.layout);
 
-                        var graf4 = {{ graf4JSON|safe }};
-                        Plotly.newPlot('graf4', graf4.data, graf4.layout);
-
-                        var graf5 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf5', graf5.data, graf5.layout);
-
-                        var graf6 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf6', graf6.data, graf6.layout);
-
-                        var graf7 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf7', graf7.data, graf7.layout);
-
-                        var graf8 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf8', graf8.data, graf8.layout);
-
-                        var graf9 = {{ graf1JSON|safe }};
-                        Plotly.newPlot('graf9', graf9.data, graf9.layout);
                  </script>
             </body>
 </div>
