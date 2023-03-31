@@ -31,7 +31,6 @@
     <body>
                  <div id="grafik1"></div>
 
-                 <div id="grafik2"></div>
                  <script>
                         var grafik1 = {{ grafik1JSON|safe }};
                         Plotly.newPlot('grafik1', grafik1.data, grafik1.layout);

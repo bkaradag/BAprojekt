@@ -1,0 +1,76 @@
+body {
+    background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #1E90FF;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-section {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-section h2 {
+    margin-top: 0;
+}
+
+.form-section label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-section select, .form-section input[type="date"], .form-section input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.form-section input[type="submit"] {
+    background-color: #1E90FF;
+    color: white;
+    cursor: pointer;
+}
+
+.form-section input[type="submit"]:hover {
+    background-color: #0066CC;
+}
+
+.graph-section {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.graph-section h2 {
+    margin-top: 0;
+}
+
+.graph-section #grafik1 {
+    width: 100%;
+}
+
+footer {
+    background-color: #1E90FF;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+    width: 100%;
+}

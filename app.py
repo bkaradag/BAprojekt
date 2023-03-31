@@ -6,6 +6,7 @@ from datetime import datetime
 from database import get_stationen_bodenfeuchte, get_bodenfeuchte_data, get_map_daten
 from berechnen import berechnen_campus_wetter_daten
 import folium
+from folium.plugins import MiniMap
 
 app = Flask(__name__)
 app.config.suppress_callback_exceptions = True
@@ -19,7 +20,7 @@ def index():
 @app.route('/stations')
 def get_map():
     # baslangic yeri
-    map = folium.Map(location=[51.7845, 9.3976], zoom_start=12)
+    map = folium.Map(location=[51.7845, 9.3976], zoom_start=12, tiles='OpenStreetMap',width=1200, height=600)
 
     fg = folium.FeatureGroup(name="Stations")
 
@@ -31,7 +32,10 @@ def get_map():
         marker.add_to(fg)
     fg.add_to(map)
 
-    map.save('templates/stations.html')
+    minimap = MiniMap(toggle_display=True)
+    map.add_child(minimap)
+
+    #map.save('templates/stations.html')
     return render_template('stations.html', stations=map_daten)
 
 
@@ -63,11 +67,11 @@ def get_bodenfeuchte():
         grafik1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
 
         # Şablonu render et   grafik1JSON=grafik1JSON
-        return render_template('bodenfeuchte.html', grafik1JSON=grafik1JSON)
+        return render_template('test.html', grafik1JSON=grafik1JSON)
     else:
         # istek methodu GET ise, sayfayı görüntüle
         stations = get_stationen_bodenfeuchte()
-        return render_template('bodenfeuchte.html', stations=stations)
+        return render_template('test.html', stations=stations)
 
 
 @app.route('/campuswetterhoexter', methods=['GET', 'POST'])
