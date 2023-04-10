@@ -3,7 +3,7 @@ import plotly
 import plotly.graph_objs as go
 from flask import render_template, request
 
-from database import get_stationen_bodenfeuchte
+
 from berechnen import berechnen_campus_wetter_daten
 
 
@@ -97,5 +97,5 @@ def get_campuswetter():
                                graf7JSON=graf7JSON, graf8JSON=graf8JSON, graf9JSON=graf9JSON)
     else:
         # istek methodu GET ise, sayfayı görüntüle
-        stations = get_stationen_bodenfeuchte()
-        return render_template('campuswetterhoexter.html', stations=stations)
+
+        return render_template('campuswetterhoexter.html')

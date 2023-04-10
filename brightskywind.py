@@ -3,7 +3,7 @@ import plotly
 import plotly.graph_objs as go
 from flask import render_template, request
 
-from database import get_stationen_bodenfeuchte, get_brightsky_wind_data
+from database import get_brightsky_wind_data
 from berechnen import berechnen_brightsky_wind_daten
 
 
@@ -97,9 +97,9 @@ def get_brightsky_wind():
 
 
         # Şablonu render et
-        return render_template('brightsky_wind.html', graf1JSON=graf1JSON, graf2JSON=graf2JSON,
+        return render_template('brightskywind.html', graf1JSON=graf1JSON, graf2JSON=graf2JSON,
                                graf3JSON=graf3JSON, graf4JSON=graf4JSON)
     else:
         # istek methodu GET ise, sayfayı görüntüle
-        stations = get_stationen_bodenfeuchte()
-        return render_template('brightsky_wind.html', stations=stations)
+
+        return render_template('brightskywind.html')

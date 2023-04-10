@@ -1,55 +1,128 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Bodenfeuchte</title>
-    <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-<body>
-    <header>
-        <h1>Bodenfeuchte</h1>
-    </header>
+{% extends "dashboard.html" %}
+{% block content %}
 
+    <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <div id="map" style="width: 100%; height: 350px;"></div>
+
+    <script>
+       function selectfunction(stations_index){
+            var selectBox = document.getElementById("station-select");
+            var optionValue = stations_index;
+            for (var i = 0; i < selectBox.options.length; i++) {
+                if (selectBox.options[i].value == optionValue) {
+                    selectBox.selectedIndex = i;
+                    break;
+                }
+            }
+       }
+
+      var map = L.map('map').setView([51.7845, 9.3976], 10);
+
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18
+      }).addTo(map);
+
+      var stationIcon = L.icon({
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon-2x.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [0, -30]
+      });
+
+      {% for station in stations %}
+      var marker = L.marker([{{ station.breite }}, {{ station.laenge }}], {icon: stationIcon}).addTo(map);
+      marker.bindPopup("Station Name: {{ station.name }}  <br> Station Index: {{ station.stations_index }} <br> <button style='background-color: #1E90FF; color:white; 'onclick=\"selectfunction({{ station.stations_index }})\">Select</button>");
+      {% endfor %}
+
+    </script>
 
     <main>
         <div class="panel">
-            <h2>Panel Başlığı</h2>
+            <h2>Bodenfeuchte</h2>
             <p>Panel içeriği burada yer alacak.</p>
         </div>
         <section class="form-section">
-            <h2>Veri Arama</h2>
-            <form method="POST">
-                <label for="station-select">İstasyon Seçin:</label>
-                <select id="station-select" name="station">
+            <form id="my-form" method="POST">
+                <section style="width:30%; float:left; margin-right:25px" >
+                    <label for="station-select">Station:</label>
+                    <select id="station-select" name="station">
                     {% for station in stations %}
-                        <option value="{{ station.Stationsindex }}">{{ station.Name }}</option>
+                        <option value="{{ station.stations_index }}">{{ station.name }}</option>
                     {% endfor %}
                 </select>
-
-                <label for="start-date">Başlangıç Tarihi:</label>
+                </section>
+                <section style="width:30%; float:left " >
+                     <label for="start-date">Start Datum:</label>
                 <input type="date" id="start-date" name="start_date">
-
-                <label for="end-date">Bitiş Tarihi:</label>
+                </section>
+                <section style="width:30%; float:right; margin-right:5%">
+                    <label for="end-date">End Datum:</label>
                 <input type="date" id="end-date" name="end_date">
-                <button name="show_today" type="submit">Sadece Bugün</button>
-                <button name="show_month" type="submit">Sadece bu ay</button>
-                <input type="submit" value="Veri Ara">
+                </section>
+                <br>
+                <section style="text-align:right; margin-right:3%;">
+                    <button class ="datumbutton" name="show_today" type="submit">Heute</button>
+                <button class ="datumbutton" name="show_month" type="submit">Monat</button>
+
+                </section>
+                <br>
+                <section style="text-align:right; margin-right:3%;">
+                    <!--<button name="show_today" type="submit">Heute</button>
+                <button name="show_month" type="submit">Monat</button>-->
+                <input id="submit-button"  type="submit" value="Abfrage">
+                </section>
+
+
+
+
             </form>
         </section>
-
-        <section class="graph-section">
+        <section id="mapsection" class="graph-section" style="visibility:hidden">
             <h2>Grafik</h2>
             <div id="grafik1"></div>
+            <div id="grafik2"></div>
+            <div id="grafik3"></div>
+            <div id="grafik4"></div>
+            <div id="grafik5"></div>
             <script>
                 var grafik1 = {{ grafik1JSON|safe }};
+                if (grafik1 !== ""){
+                    document.getElementById("mapsection").style.visibility = "visible";
+                    }
                 Plotly.newPlot('grafik1', grafik1.data, grafik1.layout);
+
+                var grafik2 = {{ grafik2JSON|safe }};
+                if (grafik2 !== ""){
+                    document.getElementById("mapsection").style.visibility = "visible";
+                    }
+                Plotly.newPlot('grafik2', grafik2.data, grafik2.layout);
+
+                var grafik3 = {{ grafik3JSON|safe }};
+                if (grafik3 !== ""){
+                    document.getElementById("mapsection").style.visibility = "visible";
+                    }
+                Plotly.newPlot('grafik3', grafik3.data, grafik3.layout);
+
+                var grafik4 = {{ grafik4JSON|safe }};
+                if (grafik4 !== ""){
+                    document.getElementById("mapsection").style.visibility = "visible";
+                    }
+                Plotly.newPlot('grafik4', grafik4.data, grafik4.layout);
+
+                var grafik5 = {{ grafik5JSON|safe }};
+                if (grafik5 !== ""){
+                    document.getElementById("mapsection").style.visibility = "visible";
+                    }
+                Plotly.newPlot('grafik5', grafik5.data, grafik5.layout);
             </script>
         </section>
     </main>
 
-    <footer>
-        <p>Technische Hochschule Ostwestfalen-Lippe 2023</p>
-    </footer>
-</body>
-</html>
+{% endblock %}

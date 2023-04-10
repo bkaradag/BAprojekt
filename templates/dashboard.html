@@ -1,55 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <title>Bodenfeuchte</title>
-    <!-- Plotly library and dependencies -->
+    <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-locale-tr-latest.min.js"></script>
+    <header class="wetterdashheader">
+        <h1>WetterDash</h1>
+    </header>
+    <header class="wetterdashmenu">
+        <button id="bodenfeuchtebutton" name="bodenfeuchtebutton" class="menubutton" onclick="window.location.href='/bodenfeuchte'">Bodenfeuchte</button>
+        <button id="pegelerfassungbutton" name="pegelerfassungbutton" class="menubutton" onclick="window.location.href='/pegel'">Pegelerfassung</button>
+        <button id="campuswetterbutton" name="campuswetterbutton" class="menubutton" onclick="window.location.href='/campuswetterhoexter'">Höxter Campus Wetter</button>
+        <button id="brightskywetterbutton" name="brightskywetterbutton" class="menubutton" onclick="window.location.href='/brightskywetter'">Brightsky Wetter</button>
+        <button id="brightskywindbutton" name="brightskywindbutton" class="menubutton" onclick="window.location.href='/brightskywind'">Brightsky Wind</button>
+    </header>
 </head>
 <body>
+    {% block content %}
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <ul>
-        {% for item in sidebar_items %}
-            <li><a href="{{ item.url }}">{{ item.name }}</a></li>
-        {% endfor %}
-    </ul>
-</div>
-
-<!-- Main content -->
-<div class="content">
-    <h1>Bodenfeuchte</h1>
-
-    <form method="POST">
-        <select name="station">
-            {% for station in stations %}
-                <option value="{{ station.Stationsindex }}">{{ station.Name }}</option>
-            {% endfor %}
-        </select>
-        <div>
-        <label for="start_date">Başlangıç Tarihi</label>
-        <input type="date" id="start_date" name="start_date">
-    </div>
-    <div>
-        <label for="end_date">Bitiş Tarihi</label>
-        <input type="date" id="end_date" name="end_date">
-    </div>
-        <input type="submit" value="Get Data">
-    </form>
-
-
-    <body>
-                 <div id="grafik1"></div>
-
-                 <div id="grafik2"></div>
-                 <script>
-                        var grafik1 = {{ grafik1JSON|safe }};
-                        Plotly.newPlot('grafik1', grafik1.data, grafik1.layout);
-                 </script>
-            </body>
-</div>
-
+    {% endblock %}
+<footer>
+    <p>Technische Hochschule Ostwestfalen-Lippe 2023</p>
+</footer>
 </body>
 </html>

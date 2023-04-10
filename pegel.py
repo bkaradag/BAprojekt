@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 from dateutil.relativedelta import relativedelta
 from flask import render_template, request
 
-from database import get_pegel_data, get_pegel_nummer
+from database import get_pegel_data, get_pegel_map_data
 
 
 def get_pegel():
@@ -37,6 +37,6 @@ def get_pegel():
 
         return render_template('pegel.html', grafik1JSON=grafik1JSON)
     else:
-        pegel = get_pegel_nummer()
+        pegel = get_pegel_map_data()
         return render_template('pegel.html', pegel=pegel)
 

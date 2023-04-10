@@ -1,16 +1,49 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Pegel</title>
-    <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-<body>
-    <header>
-        <h1>Pegel</h1>
-    </header>
+{% extends "dashboard.html" %}
+{% block content %}
 
+    <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <div id="map" style="width: 100%; height: 350px;"></div>
+
+    <script>
+       function selectfunction(pegel_index){
+            var selectBox = document.getElementById("pegel-select");
+            var optionValue = pegel_index;
+            for (var i = 0; i < selectBox.options.length; i++) {
+                if (selectBox.options[i].value == optionValue) {
+                    selectBox.selectedIndex = i;
+                    break;
+                }
+            }
+       }
+
+      var map = L.map('map').setView([51.7845, 9.3976], 10);
+
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18
+      }).addTo(map);
+
+      var pegelIcon = L.icon({
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png',
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon-2x.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [0, -30]
+      });
+
+      {% for pegel in pegel %}
+        {% if pegel.latitude and pegel.longitude %}
+            var marker = L.marker([{{ pegel.latitude }}, {{ pegel.longitude }}], {icon: pegelIcon}).addTo(map);
+            marker.bindPopup("Pegel Name: {{ pegel.name }}  <br> Pegel Nummer: {{ pegel.number }} <br> <button style='background-color: #1E90FF; color:white; 'onclick=\"selectfunction({{ pegel.number }})\">Select</button>");
+        {% endif %}
+      {% endfor %}
+
+    </script>
 
     <main>
         <div class="panel">
@@ -18,26 +51,22 @@
             <p>Diese Informationen  werden von PEGELONLINE.com erhoben.</p>
         </div>
         <section class="form-section">
-            <h2>Veri Arama</h2>
             <form method="POST">
-                <label for="pegel-select">İstasyon Seçin:</label>
+                <label for="pegel-select">Pegel:</label>
                 <select id="pegel-select" name="pegel">
                     {% for pegel in pegel %}
                         <option value="{{ pegel.number }}">{{ pegel.name }}</option>
                     {% endfor %}
                 </select>
-
-                <label for="start-date">Başlangıç Tarihi:</label>
+                <label for="start-date">Start Datum:</label>
                 <input type="date" id="start-date" name="start_date">
-
-                <label for="end-date">Bitiş Tarihi:</label>
+                <label for="end-date">End Datum:</label>
                 <input type="date" id="end-date" name="end_date">
-                <button name="show_today" type="submit">Sadece Bugün</button>
-                <button name="show_month" type="submit">Sadece bu ay</button>
-                <input type="submit" value="Veri Ara">
+                <button name="show_today" type="submit">Heute</button>
+                <button name="show_month" type="submit">Monat</button>
+                <input type="submit" value="Abfrage">
             </form>
         </section>
-
         <section class="graph-section">
             <h2>Grafik</h2>
             <div id="grafik1"></div>
@@ -48,8 +77,4 @@
         </section>
     </main>
 
-    <footer>
-        <p>Technische Hochschule Ostwestfalen-Lippe 2023</p>
-    </footer>
-</body>
-</html>
+{% endblock %}
